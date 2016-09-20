@@ -52,7 +52,7 @@ class Config:
         return str(self.cfg.get('cesi', 'host'))
 
     def getPort(self):
-        return str(self.cfg.get('cesi', 'port'))
+        return int(self.cfg.get('cesi', 'port'))
 
 class NodeConfig:
 
