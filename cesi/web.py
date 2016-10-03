@@ -534,7 +534,7 @@ def page_not_found(error):
 
 try:
     if __name__ == '__main__':
-        server = WSGIServer(('', PORT), app)
+        server = WSGIServer((HOST, PORT), app)
         server.serve_forever()
       #  app.run(debug=True, use_reloader=True, host=HOST, port=PORT)
 except xmlrpclib.Fault as err:
