@@ -1,6 +1,7 @@
 from flask import Flask, render_template, url_for, redirect, jsonify, request, g, session, flash
 from cesi import Config, Connection, Node, CONFIG_FILE, ProcessInfo, JsonValue
 from datetime import datetime
+from gevent.wsgi import WSGIServer
 import cesi 
 import xmlrpclib
 import sqlite3
@@ -533,7 +534,9 @@ def page_not_found(error):
 
 try:
     if __name__ == '__main__':
-        app.run(debug=True, use_reloader=True, host=HOST, port=PORT)
+        server = WSGIServer(('', 5000), app)
+        server.serve_forever()
+      #  app.run(debug=True, use_reloader=True, host=HOST, port=PORT)
 except xmlrpclib.Fault as err:
     print "A fault occurred"
     print "Fault code: %d" % err.faultCode
