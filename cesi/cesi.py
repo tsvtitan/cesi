@@ -1,5 +1,6 @@
 import xmlrpclib
 import httplib
+import socket
 import ConfigParser
 from datetime import datetime, timedelta
 from flask import jsonify
@@ -90,14 +91,26 @@ class Node:
         except ConfigParser.NoOptionError:
             self.process_dict = []
         
+class TimeoutTransport (xmlrpclib.Transport):
+    """
+    Custom XML-RPC transport class for HTTP connections, allowing a timeout in
+    the base connection.
+    """
 
-class TimeoutTransport(xmlrpclib.Transport):
-    timeout = 10.0
-    def setTimeout(self, timeout):
-        self.timeout = timeout
+    def __init__(self, timeout=socket._GLOBAL_DEFAULT_TIMEOUT, use_datetime=0):
+        xmlrpclib.Transport.__init__(self, use_datetime)
+        self._timeout = timeout
+
     def make_connection(self, host):
-        h = httplib.HTTPConnection(host, timeout=self.timeout)
-        return h
+        # If using python 2.6, since that implementation normally returns the 
+        # HTTP compatibility class, which doesn't have a timeout feature.
+        #import httplib
+        #host, extra_headers, x509 = self.get_host_info(host)
+        #return httplib.HTTPConnection(host, timeout=self._timeout)
+
+        conn = xmlrpclib.Transport.make_connection(self, host)
+        conn.timeout = self._timeout
+        return conn
 
 class Connection:
 
@@ -110,9 +123,9 @@ class Connection:
         self.address = "http://%s:%s@%s:%s/RPC2" %(self.username, self.password, self.host, self.port)
 
     def getConnection(self):
-        t = TimeoutTransport()
-        t.setTimeout(self.timeout)
-        return xmlrpclib.Server(self.address, transport=t)
+        t = TimeoutTransport(self.timeout)
+        return xmlrpclib.ServerProxy(self.address, transport=t)
+        #return xmlrpclib.Server(self.address, transport=t)
         
 
 class ProcessInfo:
