@@ -37,9 +37,9 @@ class Config:
         self.host = self.cfg.get(self.node_name, 'host')
         self.port = self.cfg.get(self.node_name, 'port')
         
-        #try:
-        #    self.timeout = self.cfg.get(self.node_name, 'timeout')
-        #except ConfigParser.NoOptionError:
+        try:
+            self.timeout = self.cfg.get(self.node_name, 'timeout')
+        except ConfigParser.NoOptionError:
             self.timeout = 500
         
             
