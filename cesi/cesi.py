@@ -83,13 +83,10 @@ class Node:
         self.process_list=[]
         self.process_dict2={}
         
-        try:
           for p in self.connection.supervisor.getAllProcessInfo():
               self.process_list.append(ProcessInfo(p))
               self.process_dict2[p['group']+':'+p['name']] = ProcessInfo(p)
           self.process_dict = self.connection.supervisor.getAllProcessInfo()
-        except ConfigParser.NoOptionError:
-            self.process_dict = []
         
 class TimeoutTransport (xmlrpclib.Transport):
     """
