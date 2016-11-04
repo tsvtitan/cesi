@@ -81,10 +81,15 @@ class Node:
         self.connection = Connection(node_config.host, node_config.port, node_config.username, node_config.password, node_config.timeout).getConnection()
         self.process_list=[]
         self.process_dict2={}
-        for p in self.connection.supervisor.getAllProcessInfo():
-            self.process_list.append(ProcessInfo(p))
-            self.process_dict2[p['group']+':'+p['name']] = ProcessInfo(p)
-        self.process_dict = self.connection.supervisor.getAllProcessInfo()
+        
+        try:
+          for p in self.connection.supervisor.getAllProcessInfo():
+              self.process_list.append(ProcessInfo(p))
+              self.process_dict2[p['group']+':'+p['name']] = ProcessInfo(p)
+          self.process_dict = self.connection.supervisor.getAllProcessInfo()
+        except ConfigParser.NoOptionError:
+            self.process_dict = []
+        
 
 class TimeoutTransport(xmlrpclib.Transport):
     timeout = 10.0
