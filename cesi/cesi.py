@@ -33,7 +33,14 @@ class Config:
         self.password = self.cfg.get(self.node_name, 'password')
         self.host = self.cfg.get(self.node_name, 'host')
         self.port = self.cfg.get(self.node_name, 'port')
-        self.node_config = NodeConfig(self.node_name, self.host, self.port, self.username, self.password)
+        
+        timeout = self.cfg.get(self.node_name, 'timeout')
+        if self.timeout:
+            self.timeout = timeout
+        else:
+            self.timeout = 50
+            
+        self.node_config = NodeConfig(self.node_name, self.host, self.port, self.username, self.password, self.timeout)
         return self.node_config
 
     def getMemberNames(self, environment_name):
@@ -56,12 +63,13 @@ class Config:
 
 class NodeConfig:
 
-    def __init__(self, node_name, host, port, username, password):
+    def __init__(self, node_name, host, port, username, password, timeout):
         self.node_name = node_name
         self.host = host
         self.port = port
         self.username = username
         self.password = password
+        self.timeout = timeout
             
 
 class Node:
@@ -69,7 +77,7 @@ class Node:
     def __init__(self, node_config):
         self.long_name = node_config.node_name
         self.name = node_config.node_name[5:]
-        self.connection = Connection(node_config.host, node_config.port, node_config.username, node_config.password).getConnection()
+        self.connection = Connection(node_config.host, node_config.port, node_config.username, node_config.password, node_config.timeout).getConnection()
         self.process_list=[]
         self.process_dict2={}
         for p in self.connection.supervisor.getAllProcessInfo():
@@ -77,18 +85,28 @@ class Node:
             self.process_dict2[p['group']+':'+p['name']] = ProcessInfo(p)
         self.process_dict = self.connection.supervisor.getAllProcessInfo()
 
+class TimeoutTransport(xmlrpclib.Transport):
+    timeout = 10.0
+    def setTimeout(self, timeout):
+        self.timeout = timeout
+    def make_connection(self, host):
+        h = httplib.HTTPConnection(host, timeout=self.timeout)
+        return h
 
 class Connection:
 
-    def __init__(self, host, port, username, password):
+    def __init__(self, host, port, username, password, timeout):
         self.host = host
         self.port = port
         self.username = username
         self.password = password
+        self.timeout = timeout;
         self.address = "http://%s:%s@%s:%s/RPC2" %(self.username, self.password, self.host, self.port)
 
     def getConnection(self):
-        return xmlrpclib.Server(self.address)
+        t = TimeoutTransport()
+        t.setTimeout(self.timeout)
+        return xmlrpclib.Server(self.address, transport=t)
         
 
 class ProcessInfo:
