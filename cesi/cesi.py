@@ -91,7 +91,7 @@ class Node:
               self.process_list.append(ProcessInfo(p))
               self.process_dict2[p['group']+':'+p['name']] = ProcessInfo(p)
           
-except:
+        except:
           self.process_dict = []
         
 class TimeoutTransport (xmlrpclib.Transport):
