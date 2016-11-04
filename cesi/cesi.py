@@ -83,10 +83,15 @@ class Node:
         self.process_list=[]
         self.process_dict2={}
         
-          for p in self.connection.supervisor.getAllProcessInfo():
+        try:
+          self.process_dict = self.connection.supervisor.getAllProcessInfo()
+        
+          for p in self.process_dict:
               self.process_list.append(ProcessInfo(p))
               self.process_dict2[p['group']+':'+p['name']] = ProcessInfo(p)
-          self.process_dict = self.connection.supervisor.getAllProcessInfo()
+          
+        except:
+          self.process_dict = {}
         
 class TimeoutTransport (xmlrpclib.Transport):
     """
