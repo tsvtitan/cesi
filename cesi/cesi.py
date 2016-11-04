@@ -37,10 +37,11 @@ class Config:
         self.host = self.cfg.get(self.node_name, 'host')
         self.port = self.cfg.get(self.node_name, 'port')
         
-        try:
-            self.timeout = self.cfg.get(self.node_name, 'timeout')
-        except ConfigParser.NoOptionError:
+        #try:
+        #    self.timeout = self.cfg.get(self.node_name, 'timeout')
+        #except ConfigParser.NoOptionError:
             self.timeout = 500
+        
             
         self.node_config = NodeConfig(self.node_name, self.host, self.port, self.username, self.password, self.timeout)
         return self.node_config
@@ -90,7 +91,7 @@ class Node:
               self.process_list.append(ProcessInfo(p))
               self.process_dict2[p['group']+':'+p['name']] = ProcessInfo(p)
           
-        except:
+except:
           self.process_dict = []
         
 class TimeoutTransport (xmlrpclib.Transport):
@@ -121,7 +122,7 @@ class Connection:
         self.address = "http://%s:%s@%s:%s/RPC2" %(self.username, self.password, self.host, self.port)
 
     def getConnection(self):
-        t = TimeoutTransport(self.timeout)
+        #t = TimeoutTransport(self.timeout)
         #return xmlrpclib.ServerProxy(self.address, transport=t)
         return xmlrpclib.Server(self.address)
         
