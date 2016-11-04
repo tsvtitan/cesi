@@ -37,7 +37,7 @@ class Config:
         
         try:
             self.timeout = self.cfg.get(self.node_name, 'timeout')
-        except NoOptionError:
+        except ConfigParser.NoOptionError:
             self.timeout = 50
             
         self.node_config = NodeConfig(self.node_name, self.host, self.port, self.username, self.password, self.timeout)
