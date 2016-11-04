@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from flask import jsonify
 
 CONFIG_FILE = "/etc/cesi.conf"
+        
 class Config:
     
     def __init__(self, CFILE):
@@ -34,10 +35,9 @@ class Config:
         self.host = self.cfg.get(self.node_name, 'host')
         self.port = self.cfg.get(self.node_name, 'port')
         
-        timeout = self.cfg.get(self.node_name, 'timeout')
-        if self.timeout:
-            self.timeout = timeout
-        else:
+        try:
+            self.timeout = self.cfg.get(self.node_name, 'timeout')
+        except NoOptionError:
             self.timeout = 50
             
         self.node_config = NodeConfig(self.node_name, self.host, self.port, self.username, self.password, self.timeout)
