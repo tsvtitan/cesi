@@ -94,10 +94,6 @@ class Node:
           self.process_dict = {}
         
 class TimeoutTransport (xmlrpclib.Transport):
-    """
-    Custom XML-RPC transport class for HTTP connections, allowing a timeout in
-    the base connection.
-    """
 
     def __init__(self, timeout=socket._GLOBAL_DEFAULT_TIMEOUT, use_datetime=0):
         xmlrpclib.Transport.__init__(self, use_datetime)
@@ -126,8 +122,8 @@ class Connection:
 
     def getConnection(self):
         t = TimeoutTransport(self.timeout)
-        return xmlrpclib.ServerProxy(self.address, transport=t)
-        #return xmlrpclib.Server(self.address, transport=t)
+        #return xmlrpclib.ServerProxy(self.address, transport=t)
+        return xmlrpclib.Server(self.address)
         
 
 class ProcessInfo:
